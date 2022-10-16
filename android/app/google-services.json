@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "561192851726",
+    "project_id": "world-of-coctails-final",
+    "storage_bucket": "world-of-coctails-final.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:561192851726:android:39129435db8e16382ddf5f",
+        "android_client_info": {
+          "package_name": "com.example.world_of_coctails_final"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "561192851726-k1qf971cck6rfrbbk0ah32k7dbjbvljo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYWsjCeo5XvFrzLqKax7Hjse3uInWcZgM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "561192851726-k1qf971cck6rfrbbk0ah32k7dbjbvljo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
