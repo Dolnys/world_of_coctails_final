@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:world_of_coctails_final/constants/routes.dart';
 import 'package:world_of_coctails_final/views/login_view.dart';
 import 'package:world_of_coctails_final/views/register_view.dart';
 import 'package:world_of_coctails_final/views/verify_email_view.dart';
@@ -17,9 +18,9 @@ void main() {
       ),
       home: const HomePage(),
       routes: {
-        '/login/': (context) => const LoginView(),
-        '/register/': (context) => const RegisterView(),
-        '/coctails/': (context) => const CoctailsView(),
+        loginRoute: (context) => const LoginView(),
+        registerRoute: (context) => const RegisterView(),
+        coctailsRoute: (context) => const CoctailsView(),
       },
     ),
   );
@@ -80,7 +81,7 @@ class _CoctailsViewState extends State<CoctailsView> {
                   if (shouldLogout) {
                     await FirebaseAuth.instance.signOut();
                     Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/login/',
+                      loginRoute,
                       (_) => false,
                     );
                   }
