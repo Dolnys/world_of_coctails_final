@@ -2,11 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:world_of_coctails_final/constants/routes.dart';
+import 'package:world_of_coctails_final/utilities/show_error_dialog.dart';
 import 'package:world_of_coctails_final/views/login_view.dart';
 import 'package:world_of_coctails_final/views/register_view.dart';
 import 'package:world_of_coctails_final/views/verify_email_view.dart';
 import 'firebase_options.dart';
-import 'dart:developer' as devtools show log;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -101,28 +101,4 @@ class _CoctailsViewState extends State<CoctailsView> {
       body: const Text('Hello world'),
     );
   }
-}
-
-Future<bool> showLogOutDialog(BuildContext context) {
-  return showDialog<bool>(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out ?'),
-        actions: [
-          TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-              child: const Text('Cancel')),
-          TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-              child: const Text('Log Out ')),
-        ],
-      );
-    },
-  ).then((value) => value ?? false);
 }
