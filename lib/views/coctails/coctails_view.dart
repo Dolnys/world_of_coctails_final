@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:world_of_coctails_final/services/auth/auth_service.dart';
 import 'package:world_of_coctails_final/services/crud/coctails_service.dart';
 
-import '../constants/routes.dart';
-import '../enums/menu_action.dart';
-import '../utilities/show_error_dialog.dart';
+import '../../constants/routes.dart';
+import '../../enums/menu_action.dart';
+import '../../utilities/show_error_dialog.dart';
 
 class CoctailsView extends StatefulWidget {
   const CoctailsView({Key? key}) : super(key: key);
@@ -33,8 +33,14 @@ class _CoctailsViewState extends State<CoctailsView> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('world of coctials'),
+          title: const Text('Your Coctails'),
           actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed(newCoctailRoute);
+              },
+              icon: const Icon(Icons.add_box),
+            ),
             PopupMenuButton<MenuAction>(
               onSelected: (value) async {
                 switch (value) {

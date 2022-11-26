@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:world_of_coctails_final/constants/routes.dart';
 import 'package:world_of_coctails_final/services/auth/auth_service.dart';
-import 'package:world_of_coctails_final/views/coctails_view.dart';
+import 'package:world_of_coctails_final/views/coctails/coctails_view.dart';
+import 'package:world_of_coctails_final/views/coctails/new_coctail_view.dart';
 import 'package:world_of_coctails_final/views/login_view.dart';
 import 'package:world_of_coctails_final/views/register_view.dart';
 import 'package:world_of_coctails_final/views/verify_email_view.dart';
@@ -20,6 +21,7 @@ void main() {
         registerRoute: (context) => const RegisterView(),
         coctailsRoute: (context) => const CoctailsView(),
         verifyEmailRoute: (context) => const VerifyEmailView(),
+        newCoctailRoute: (context) => const NewCoctailView(),
       },
     ),
   );
