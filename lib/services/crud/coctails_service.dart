@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import 'package:sqflite/sqflite.dart';
@@ -9,13 +11,45 @@ import 'crud_exeptions.dart';
 class CoctailsService {
   Database? _db;
 
+  List<DatabaseCoctail> _coctails = [];
+
+  static final CoctailsService _shared = CoctailsService._sharedInstance();
+  CoctailsService._sharedInstance();
+  factory CoctailsService() => _shared;
+
+  final _coctailsStreamController =
+      StreamController<List<DatabaseCoctail>>.broadcast();
+
+  Stream<List<DatabaseCoctail>> get allCoctails =>
+      _coctailsStreamController.stream;
+
+  Future<DatabaseUser> getOrCreateUser({required String email}) async {
+    try {
+      final user = await getUser(email: email);
+      return user;
+    } on CouldNotFindUser {
+      final cretedUser = await createUser(email: email);
+      return cretedUser;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> _cacheCoctails() async {
+    final allCoctails = await getAllCoctails();
+    _coctails = allCoctails.toList();
+    _coctailsStreamController.add(_coctails);
+  }
+
   Future<DatabaseCoctail> updateCoctail({
     required DatabaseCoctail coctail,
     required String text,
   }) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
-
+// make sure note exists
     await getCoctail(id: coctail.id);
+    // uptade DB
 
     final updatesCount = await db.update(coctailTable, {
       textColumn: text,
@@ -25,11 +59,16 @@ class CoctailsService {
     if (updatesCount == 0) {
       throw CouldNotUpdateCoctail();
     } else {
-      return await getCoctail(id: coctail.id);
+      final updatedCoctail = await getCoctail(id: coctail.id);
+      _coctails.removeWhere((coctails) => coctail.id == updatedCoctail.id);
+      _coctails.add(updatedCoctail);
+      _coctailsStreamController.add(_coctails);
+      return updatedCoctail;
     }
   }
 
   Future<Iterable<DatabaseCoctail>> getAllCoctails() async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final coctails = await db.query(coctailTable);
 
@@ -37,6 +76,7 @@ class CoctailsService {
   }
 
   Future<DatabaseCoctail> getCoctail({required int id}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final coctails = await db.query(
       coctailTable,
@@ -48,16 +88,25 @@ class CoctailsService {
     if (coctails.isEmpty) {
       throw CouldNotFindCoctail();
     } else {
-      return DatabaseCoctail.fromRow(coctails.first);
+      final coctail = DatabaseCoctail.fromRow(coctails.first);
+      _coctails.removeWhere((coctail) => coctail.id == id);
+      _coctails.add(coctail);
+      _coctailsStreamController.add(_coctails);
+      return coctail;
     }
   }
 
   Future<int> deleteAllCoctails() async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
-    return await db.delete(coctailTable);
+    final numberOfDeletions = await db.delete(coctailTable);
+    _coctails = [];
+    _coctailsStreamController.add(_coctails);
+    return numberOfDeletions;
   }
 
   Future<void> deleteCoctail({required int id}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final deletedCount = await db.delete(
       coctailTable,
@@ -66,10 +115,14 @@ class CoctailsService {
     );
     if (deletedCount == 0) {
       throw CouldNotDeleteCoctail();
+    } else {
+      _coctails.removeWhere((coctail) => coctail.id == id);
+      _coctailsStreamController.add(_coctails);
     }
   }
 
   Future<DatabaseCoctail> createCoctail({required DatabaseUser owner}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
     // make sure owner exists in the database with the correct id
@@ -93,10 +146,14 @@ class CoctailsService {
       isSyncedWithCloud: true,
     );
 
+    _coctails.add(coctail);
+    _coctailsStreamController.add(_coctails);
+
     return coctail;
   }
 
   Future<DatabaseUser> getUser({required String email}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
     final results = await db.query(
@@ -114,6 +171,7 @@ class CoctailsService {
   }
 
   Future<DatabaseUser> createUser({required String email}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final results = await db.query(
       userTable,
@@ -136,6 +194,7 @@ class CoctailsService {
   }
 
   Future<void> deleteUser({required String email}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final deletedCount = await db.delete(
       userTable,
@@ -166,6 +225,14 @@ class CoctailsService {
     }
   }
 
+  Future<void> _ensureDbIsOpen() async {
+    try {
+      await open();
+    } on DatabaseAlreadyOpenException {
+      //empty
+    }
+  }
+
   Future<void> open() async {
     if (_db != null) {
       throw DatabaseAlreadyOpenException();
@@ -179,6 +246,7 @@ class CoctailsService {
       await db.execute(createUserTable);
       // create coctail table
       await db.execute(createCoctailTable);
+      await _cacheCoctails();
     } on MissingPlatformDirectoryException {
       throw UnableToGetDocumentsDirectory();
     }
@@ -239,7 +307,7 @@ class DatabaseCoctail {
   int get hashCode => id.hashCode;
 }
 
-const dbName = 'coctails.db';
+const dbName = 'coctail.db';
 const coctailTable = 'coctail';
 const userTable = 'user';
 const idColumn = 'id';
