@@ -326,7 +326,7 @@ const createUserTable = '''CREATE TABLE IF NOT EXISTS "user" (
         "email"	TEXT NOT NULL UNIQUE,
         PRIMARY KEY("id" AUTOINCREMENT)
       );''';
-const createCoctailTable = '''CREATE TABLE IF NOT EXISTS "cioctail" (
+const createCoctailTable = '''CREATE TABLE IF NOT EXISTS "coctail" (
         "id"	INTEGER NOT NULL,
         "user_id"	INTEGER NOT NULL,
         "text"	TEXT,

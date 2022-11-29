@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:world_of_coctails_final/constants/routes.dart';
+import 'package:world_of_coctails_final/enums/menu_action.dart';
 import 'package:world_of_coctails_final/services/auth/auth_service.dart';
-import 'package:world_of_coctails_final/services/crud/coctails_service.dart';
+import 'package:world_of_coctails_final/utilities/dialogs/logout_dialog.dart';
+import 'package:world_of_coctails_final/views/coctails/coctails_list_view.dart';
 
-import '../../constants/routes.dart';
-import '../../enums/menu_action.dart';
-import '../../utilities/show_error_dialog.dart';
+import '../../services/crud/coctails_service.dart';
 
 class CoctailsView extends StatefulWidget {
   const CoctailsView({Key? key}) : super(key: key);
-
   @override
   _CoctailsViewState createState() => _CoctailsViewState();
 }
@@ -16,7 +16,6 @@ class CoctailsView extends StatefulWidget {
 class _CoctailsViewState extends State<CoctailsView> {
   late final CoctailsService _coctailsService;
   String get userEmail => AuthService.firebase().currentUser!.email!;
-
   @override
   void initState() {
     _coctailsService = CoctailsService();
@@ -33,7 +32,7 @@ class _CoctailsViewState extends State<CoctailsView> {
             onPressed: () {
               Navigator.of(context).pushNamed(newCoctailRoute);
             },
-            icon: const Icon(Icons.add_box),
+            icon: const Icon(Icons.add),
           ),
           PopupMenuButton<MenuAction>(
             onSelected: (value) async {
@@ -53,7 +52,7 @@ class _CoctailsViewState extends State<CoctailsView> {
               return const [
                 PopupMenuItem<MenuAction>(
                   value: MenuAction.logout,
-                  child: Text('logout'),
+                  child: Text('Log out'),
                 ),
               ];
             },
@@ -74,18 +73,11 @@ class _CoctailsViewState extends State<CoctailsView> {
                       if (snapshot.hasData) {
                         final allCoctails =
                             snapshot.data as List<DatabaseCoctail>;
-                        return ListView.builder(
-                          itemCount: allCoctails.length,
-                          itemBuilder: (context, index) {
-                            final coctail = allCoctails[index];
-                            return ListTile(
-                              title: Text(
-                                coctail.text,
-                                maxLines: 1,
-                                softWrap: true,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            );
+                        return CoctailsListView(
+                          coctails: allCoctails,
+                          onDeleteCoctail: (coctail) async {
+                            await _coctailsService.deleteCoctail(
+                                id: coctail.id);
                           },
                         );
                       } else {
