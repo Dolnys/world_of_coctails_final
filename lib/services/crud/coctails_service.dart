@@ -14,11 +14,17 @@ class CoctailsService {
   List<DatabaseCoctail> _coctails = [];
 
   static final CoctailsService _shared = CoctailsService._sharedInstance();
-  CoctailsService._sharedInstance();
+  CoctailsService._sharedInstance() {
+    _coctailsStreamController =
+        StreamController<List<DatabaseCoctail>>.broadcast(
+      onListen: () {
+        _coctailsStreamController.sink.add(_coctails);
+      },
+    );
+  }
   factory CoctailsService() => _shared;
 
-  final _coctailsStreamController =
-      StreamController<List<DatabaseCoctail>>.broadcast();
+  late final StreamController<List<DatabaseCoctail>> _coctailsStreamController;
 
   Stream<List<DatabaseCoctail>> get allCoctails =>
       _coctailsStreamController.stream;
@@ -47,7 +53,7 @@ class CoctailsService {
   }) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
-// make sure note exists
+// make sure coctail exists
     await getCoctail(id: coctail.id);
     // uptade DB
 
