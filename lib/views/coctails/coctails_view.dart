@@ -30,7 +30,7 @@ class _CoctailsViewState extends State<CoctailsView> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.of(context).pushNamed(newCoctailRoute);
+              Navigator.of(context).pushNamed(CreateOrUptadeCoctailRoute);
             },
             icon: const Icon(Icons.add),
           ),
@@ -78,6 +78,12 @@ class _CoctailsViewState extends State<CoctailsView> {
                           onDeleteCoctail: (coctail) async {
                             await _coctailsService.deleteCoctail(
                                 id: coctail.id);
+                          },
+                          onTap: (coctail) {
+                            Navigator.of(context).pushNamed(
+                              CreateOrUptadeCoctailRoute,
+                              arguments: coctail,
+                            );
                           },
                         );
                       } else {

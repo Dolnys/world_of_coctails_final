@@ -2,16 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:world_of_coctails_final/services/crud/coctails_service.dart';
 import 'package:world_of_coctails_final/utilities/dialogs/delete_dialog.dart';
 
-typedef DeleteCoctailCallback = void Function(DatabaseCoctail coctail);
+typedef CoctailCallback = void Function(DatabaseCoctail coctail);
 
 class CoctailsListView extends StatelessWidget {
   final List<DatabaseCoctail> coctails;
-  final DeleteCoctailCallback onDeleteCoctail;
+  final CoctailCallback onDeleteCoctail;
+  final CoctailCallback onTap;
 
   const CoctailsListView({
     Key? key,
     required this.coctails,
     required this.onDeleteCoctail,
+    required this.onTap,
   }) : super(key: key);
 
   @override
@@ -21,6 +23,9 @@ class CoctailsListView extends StatelessWidget {
       itemBuilder: (context, index) {
         final coctail = coctails[index];
         return ListTile(
+          onTap: () {
+            onTap(coctail);
+          },
           title: Text(
             coctail.text,
             maxLines: 1,
