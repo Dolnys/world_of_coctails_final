@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' show join;
+import 'package:world_of_coctails_final/extensions/filter.dart';
 
 import 'crud_exeptions.dart';
 
@@ -12,6 +13,8 @@ class CoctailsService {
   Database? _db;
 
   List<DatabaseCoctail> _coctails = [];
+
+  DatabaseUser? _user;
 
   static final CoctailsService _shared = CoctailsService._sharedInstance();
   CoctailsService._sharedInstance() {
@@ -27,15 +30,31 @@ class CoctailsService {
   late final StreamController<List<DatabaseCoctail>> _coctailsStreamController;
 
   Stream<List<DatabaseCoctail>> get allCoctails =>
-      _coctailsStreamController.stream;
+      _coctailsStreamController.stream.filter((coctail) {
+        final currentUser = _user;
+        if (currentUser != null) {
+          return coctail.userId == currentUser.id;
+        } else {
+          throw UserShouldBeSetBeforeReadingAllNotes();
+        }
+      });
 
-  Future<DatabaseUser> getOrCreateUser({required String email}) async {
+  Future<DatabaseUser> getOrCreateUser({
+    required String email,
+    bool setAsCurrentUser = true,
+  }) async {
     try {
       final user = await getUser(email: email);
+      if (setAsCurrentUser) {
+        _user = user;
+      }
       return user;
     } on CouldNotFindUser {
-      final cretedUser = await createUser(email: email);
-      return cretedUser;
+      final createdUser = await createUser(email: email);
+      if (setAsCurrentUser) {
+        _user = createdUser;
+      }
+      return createdUser;
     } catch (e) {
       rethrow;
     }
@@ -57,10 +76,15 @@ class CoctailsService {
     await getCoctail(id: coctail.id);
     // uptade DB
 
-    final updatesCount = await db.update(coctailTable, {
-      textColumn: text,
-      isSyncedWithCloudColumn: 0,
-    });
+    final updatesCount = await db.update(
+      coctailTable,
+      {
+        textColumn: text,
+        isSyncedWithCloudColumn: 0,
+      },
+      where: 'id = ?',
+      whereArgs: [coctail.id],
+    );
 
     if (updatesCount == 0) {
       throw CouldNotUpdateCoctail();
@@ -77,6 +101,8 @@ class CoctailsService {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final coctails = await db.query(coctailTable);
+
+    print(coctails);
 
     return coctails.map((coctailRow) => DatabaseCoctail.fromRow(coctailRow));
   }

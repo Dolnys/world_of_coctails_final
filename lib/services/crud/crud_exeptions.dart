@@ -15,3 +15,5 @@ class CouldNotDeleteCoctail implements Exception {}
 class CouldNotFindCoctail implements Exception {}
 
 class CouldNotUpdateCoctail implements Exception {}
+
+class UserShouldBeSetBeforeReadingAllNotes implements Exception {}
