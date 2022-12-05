@@ -102,8 +102,6 @@ class CoctailsService {
     final db = _getDatabaseOrThrow();
     final coctails = await db.query(coctailTable);
 
-    print(coctails);
-
     return coctails.map((coctailRow) => DatabaseCoctail.fromRow(coctailRow));
   }
 

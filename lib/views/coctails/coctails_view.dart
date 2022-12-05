@@ -15,7 +15,7 @@ class CoctailsView extends StatefulWidget {
 
 class _CoctailsViewState extends State<CoctailsView> {
   late final CoctailsService _coctailsService;
-  String get userEmail => AuthService.firebase().currentUser!.email!;
+  String get userEmail => AuthService.firebase().currentUser!.email;
   @override
   void initState() {
     _coctailsService = CoctailsService();

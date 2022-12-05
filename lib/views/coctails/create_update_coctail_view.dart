@@ -55,7 +55,7 @@ class _CreateUptadeCoctailViewState extends State<CreateUptadeCoctailView> {
       return existingCoctail;
     }
     final currentUser = AuthService.firebase().currentUser!;
-    final email = currentUser.email!;
+    final email = currentUser.email;
     final owner = await _coctailsService.getUser(email: email);
     final newCoctail = await _coctailsService.createCoctail(owner: owner);
     _coctail = newCoctail;
