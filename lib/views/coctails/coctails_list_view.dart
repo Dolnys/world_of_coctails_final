@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:world_of_coctails_final/services/crud/coctails_service.dart';
+import 'package:world_of_coctails_final/services/cloud/cloud_coctail.dart';
+
 import 'package:world_of_coctails_final/utilities/dialogs/delete_dialog.dart';
 
-typedef CoctailCallback = void Function(DatabaseCoctail coctail);
+typedef CoctailCallback = void Function(CloudCoctail coctail);
 
 class CoctailsListView extends StatelessWidget {
-  final List<DatabaseCoctail> coctails;
+  final Iterable<CloudCoctail> coctails;
   final CoctailCallback onDeleteCoctail;
   final CoctailCallback onTap;
 
@@ -21,7 +22,7 @@ class CoctailsListView extends StatelessWidget {
     return ListView.builder(
       itemCount: coctails.length,
       itemBuilder: (context, index) {
-        final coctail = coctails[index];
+        final coctail = coctails.elementAt(index);
         return ListTile(
           onTap: () {
             onTap(coctail);

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
+
 import 'package:world_of_coctails_final/services/auth/auth_service.dart';
-import 'package:world_of_coctails_final/services/crud/coctails_service.dart';
-import 'package:world_of_coctails_final/utilities/dialogs/generics/get_arguments.dart';
+import 'package:world_of_coctails_final/services/cloud/cloud_coctail.dart';
+import 'package:world_of_coctails_final/services/cloud/firebase_cloud_storage.dart';
+import 'package:world_of_coctails_final/utilities/dialogs/cannot_share_empty_coctail_dialog.dart';
+
+import 'package:world_of_coctails_final/utilities/generics/get_arguments.dart';
 
 class CreateUptadeCoctailView extends StatefulWidget {
   const CreateUptadeCoctailView({super.key});
@@ -12,13 +17,13 @@ class CreateUptadeCoctailView extends StatefulWidget {
 }
 
 class _CreateUptadeCoctailViewState extends State<CreateUptadeCoctailView> {
-  DatabaseCoctail? _coctail;
-  late final CoctailsService _coctailsService;
+  CloudCoctail? _coctail;
+  late final FirebaseCloudStorage _coctailsService;
   late final TextEditingController _textController;
 
   @override
   void initState() {
-    _coctailsService = CoctailsService();
+    _coctailsService = FirebaseCloudStorage();
     _textController = TextEditingController();
     super.initState();
   }
@@ -30,7 +35,7 @@ class _CreateUptadeCoctailViewState extends State<CreateUptadeCoctailView> {
     }
     final text = _textController.text;
     await _coctailsService.updateCoctail(
-      coctail: coctail,
+      documentId: coctail.documentId,
       text: text,
     );
   }
@@ -40,9 +45,8 @@ class _CreateUptadeCoctailViewState extends State<CreateUptadeCoctailView> {
     _textController.addListener(_textControllerListener);
   }
 
-  Future<DatabaseCoctail> createOrGetExistingCoctail(
-      BuildContext context) async {
-    final widgetCoctail = context.getArgument<DatabaseCoctail>();
+  Future<CloudCoctail> createOrGetExistingCoctail(BuildContext context) async {
+    final widgetCoctail = context.getArgument<CloudCoctail>();
 
     if (widgetCoctail != null) {
       _coctail = widgetCoctail;
@@ -55,9 +59,9 @@ class _CreateUptadeCoctailViewState extends State<CreateUptadeCoctailView> {
       return existingCoctail;
     }
     final currentUser = AuthService.firebase().currentUser!;
-    final email = currentUser.email;
-    final owner = await _coctailsService.getUser(email: email);
-    final newCoctail = await _coctailsService.createCoctail(owner: owner);
+    final userId = currentUser.id;
+    final newCoctail =
+        await _coctailsService.createNewCoctail(ownerUserId: userId);
     _coctail = newCoctail;
     return newCoctail;
   }
@@ -65,7 +69,7 @@ class _CreateUptadeCoctailViewState extends State<CreateUptadeCoctailView> {
   void _deleteCoctailIfTextIsEmpty() {
     final coctail = _coctail;
     if (_textController.text.isEmpty && coctail != null) {
-      _coctailsService.deleteCoctail(id: coctail.id);
+      _coctailsService.deleteCoctail(documentId: coctail.documentId);
     }
   }
 
@@ -74,7 +78,7 @@ class _CreateUptadeCoctailViewState extends State<CreateUptadeCoctailView> {
     final text = _textController.text;
     if (coctail != null && text.isNotEmpty) {
       await _coctailsService.updateCoctail(
-        coctail: coctail,
+        documentId: coctail.documentId,
         text: text,
       );
     }
@@ -94,6 +98,19 @@ class _CreateUptadeCoctailViewState extends State<CreateUptadeCoctailView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('New Coctail'),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              final text = _textController.text;
+              if (_coctail == null || text.isEmpty) {
+                await showCannotShareEmptyCoctailDialog(context);
+              } else {
+                Share.share(text);
+              }
+            },
+            icon: const Icon(Icons.share),
+          ),
+        ],
       ),
       body: FutureBuilder(
         future: createOrGetExistingCoctail(context),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:world_of_coctails_final/constants/routes.dart';
 import 'package:world_of_coctails_final/services/auth/auth_exceptions.dart';
 import 'package:world_of_coctails_final/services/auth/auth_service.dart';
-import 'package:world_of_coctails_final/views/login_view.dart';
+
 import 'package:world_of_coctails_final/utilities/dialogs/error_dialog.dart';
 
 class RegisterView extends StatefulWidget {

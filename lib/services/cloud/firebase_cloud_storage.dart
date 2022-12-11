@@ -6,6 +6,19 @@ import 'package:world_of_coctails_final/services/cloud/cloud_storage_exceptions.
 class FirebaseCloudStorage {
   final coctails = FirebaseFirestore.instance.collection('coctails');
 
+  Future<CloudCoctail> createNewCoctail({required String ownerUserId}) async {
+    final document = await coctails.add({
+      ownerUserIdFieldName: ownerUserId,
+      textFieldName: '',
+    });
+    final fetchedCoctail = await document.get();
+    return CloudCoctail(
+      documentId: fetchedCoctail.id,
+      ownerUserId: ownerUserId,
+      text: '',
+    );
+  }
+
   Future<void> deleteCoctail({required String documentId}) async {
     try {
       await coctails.doc(documentId).delete();
@@ -40,26 +53,11 @@ class FirebaseCloudStorage {
           )
           .get()
           .then(
-            (value) => value.docs.map(
-              (doc) {
-                return CloudCoctail(
-                  documentId: doc.id,
-                  ownerUserId: doc.data()[ownerUserIdFieldName] as String,
-                  text: doc.data()[textFieldName] as String,
-                );
-              },
-            ),
+            (value) => value.docs.map((doc) => CloudCoctail.fromSnapshot(doc)),
           );
     } catch (e) {
       throw CouldNotGetAllCoctailsException();
     }
-  }
-
-  void createNewCoctail({required String ownerUserId}) async {
-    await coctails.add({
-      ownerUserIdFieldName: ownerUserId,
-      textFieldName: '',
-    });
   }
 
   static final FirebaseCloudStorage _shared =

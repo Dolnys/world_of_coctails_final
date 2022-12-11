@@ -7,6 +7,7 @@ class CloudCoctail {
   final String documentId;
   final String ownerUserId;
   final String text;
+
   const CloudCoctail({
     required this.documentId,
     required this.ownerUserId,
@@ -17,5 +18,5 @@ class CloudCoctail {
       QueryDocumentSnapshot<Map<String, dynamic>> snapshot)
       : documentId = snapshot.id,
         ownerUserId = snapshot.data()[ownerUserIdFieldName],
-        text = snapshot.data()[textFieldName] as String;
+        text = snapshot.data()[textFieldName] as String? ?? '<empty coctail>';
 }
