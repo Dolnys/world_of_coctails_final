@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:world_of_coctails_final/constants/routes.dart';
+
 import 'package:world_of_coctails_final/services/auth/auth_exceptions.dart';
 import 'package:world_of_coctails_final/services/auth/block/auth_block.dart';
 import 'package:world_of_coctails_final/services/auth/block/auth_event.dart';
@@ -18,7 +18,6 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
-  CloseDialog? _closeDialogHandle;
 
   @override
   void initState() {
@@ -39,16 +38,6 @@ class _LoginViewState extends State<LoginView> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) async {
         if (state is AuthStateLoggedOut) {
-          final CloseDialog = _closeDialogHandle;
-          if (!state.isLoading && CloseDialog != null) {
-            CloseDialog();
-            _closeDialogHandle = null;
-          } else if (state.isLoading && CloseDialog == null) {
-            _closeDialogHandle = showLoadingDialog(
-              context: context,
-              text: 'Loading...',
-            );
-          }
           if (state.exception is UserNotFoundAuthException) {
             await showErrorDialog(context, 'User not found');
           } else if (state.exception is WrongPasswordAuthException) {

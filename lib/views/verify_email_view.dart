@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:world_of_coctails_final/constants/routes.dart';
-import 'package:world_of_coctails_final/services/auth/auth_service.dart';
+
 import 'package:world_of_coctails_final/services/auth/block/auth_block.dart';
 import 'package:world_of_coctails_final/services/auth/block/auth_event.dart';
 
