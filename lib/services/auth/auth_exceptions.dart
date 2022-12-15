@@ -10,10 +10,10 @@ class WeakPasswordAuthException implements Exception {}
 
 class EmailAlreadyInUseAuthException implements Exception {}
 
-class InvalidEmailAuthExceptions implements Exception {}
+class InvalidEmailAuthException implements Exception {}
 
 // Generic Exceptions
 
-class GenericAuthExceptions implements Exception {}
+class GenericAuthException implements Exception {}
 
-class UserNotLoggedInExceptions implements Exception {}
+class UserNotLoggedInException implements Exception {}

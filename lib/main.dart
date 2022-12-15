@@ -9,6 +9,7 @@ import 'package:world_of_coctails_final/services/auth/block/auth_state.dart';
 import 'package:world_of_coctails_final/services/auth/firebase_auth_provider.dart';
 import 'package:world_of_coctails_final/views/coctails/coctails_view.dart';
 import 'package:world_of_coctails_final/views/coctails/create_update_coctail_view.dart';
+import 'package:world_of_coctails_final/views/forgot_password_view.dart';
 import 'package:world_of_coctails_final/views/login_view.dart';
 
 import 'package:world_of_coctails_final/views/register_view.dart';
@@ -58,6 +59,8 @@ class HomePage extends StatelessWidget {
           return const VerifyEmailView();
         } else if (state is AuthStateLoggedOut) {
           return const LoginView();
+        } else if (state is AuthStateForgotPassword) {
+          return const ForgotPasswordView();
         } else if (state is AuthStateRegistering) {
           return const RegisterView();
         } else {
