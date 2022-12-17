@@ -48,13 +48,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         isLoading: false,
       ));
     });
-    //send email verification
-    on<AuthEvent>((event, emit) async {
+    // send email verification
+    on<AuthEventSendEmailVerification>((event, emit) async {
       await provider.sendEmailVerification();
       emit(state);
     });
-
-    //initialize
+    on<AuthEventRegister>((event, emit) async {
+      final email = event.email;
+      final password = event.password;
+      try {
+        await provider.createUser(
+          email: email,
+          password: password,
+        );
+        await provider.sendEmailVerification();
+        emit(const AuthStateNeedsVerification(isLoading: false));
+      } on Exception catch (e) {
+        emit(AuthStateRegistering(
+          exception: e,
+          isLoading: false,
+        ));
+      }
+    });
+    // initialize
     on<AuthEventInitialize>((event, emit) async {
       await provider.initialize();
       final user = provider.currentUser;
@@ -68,36 +84,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } else if (!user.isEmailVerified) {
         emit(const AuthStateNeedsVerification(isLoading: false));
       } else {
-        emit(
-          AuthStateLoggedIn(
-            user: user,
-            isLoading: false,
-          ),
-        );
-      }
-    });
-    //register
-    on<AuthEventRegister>((event, emit) async {
-      final email = event.email;
-      final password = event.password;
-      try {
-        await provider.createUser(
-          email: email,
-          password: password,
-        );
-        await provider.sendEmailVerification();
-        emit(const AuthStateNeedsVerification(
-          isLoading: false,
-        ));
-      } on Exception catch (e) {
-        emit(AuthStateRegistering(
-          exception: e,
+        emit(AuthStateLoggedIn(
+          user: user,
           isLoading: false,
         ));
       }
     });
-
-    //log in
+    // log in
     on<AuthEventLogIn>((event, emit) async {
       emit(
         const AuthStateLoggedOut(
