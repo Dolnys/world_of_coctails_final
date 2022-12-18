@@ -9,8 +9,9 @@ import 'package:world_of_coctails_final/services/auth/block/auth_state.dart';
 import 'package:world_of_coctails_final/services/auth/firebase_auth_provider.dart';
 import 'package:world_of_coctails_final/views/coctails/coctails_view.dart';
 import 'package:world_of_coctails_final/views/coctails/create_update_coctail_view.dart';
-import 'package:world_of_coctails_final/views/forgot_password_view.dart';
 import 'package:world_of_coctails_final/views/login_view.dart';
+import 'package:world_of_coctails_final/views/welcome_screen.dart';
+import 'package:world_of_coctails_final/views/forgot_password_view.dart';
 
 import 'package:world_of_coctails_final/views/register_view.dart';
 import 'package:world_of_coctails_final/views/verify_email_view.dart';
